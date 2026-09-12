@@ -21,9 +21,11 @@ htmlcov/
 .idea/
 .vscode/
 
-# Runtime outputs (keep folder via .gitkeep)
+# Runtime outputs (keep Colab export artifacts)
 outputs/*
 !outputs/.gitkeep
+!outputs/colab_exports/
+!outputs/colab_exports/**
 
 # Large public datasets (download later; never commit)
 data/cnrpark/
@@ -43,3 +45,6 @@ weights/
 
 # Notebooks
 .ipynb_checkpoints/
+
+# Local scratch
+scripts/__pycache__/

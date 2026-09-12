@@ -1,12 +1,17 @@
-# Core lab path (OpenCV head). Resolves on Colab; do not train.
-# ultralytics is optional — see requirements-yolo.txt (it caps numpy at 2.1.1
-# and pulls opencv-python, which conflicts with opencv-python-headless).
-numpy>=1.26.4,<2.2
-opencv-python-headless>=4.8.0,<4.12
-Pillow>=10.0.0,<12
-PyYAML>=6.0.2
-pydantic>=2.7,<3
-streamlit>=1.40,<1.46
-fastapi>=0.115,<0.116
-uvicorn>=0.34,<0.36
-pytest>=8.3,<9
+# Parking occupancy MVP — Colab / local deps
+# Install: pip install -r requirements.txt
+# On Colab Python 3.13, reinstall Pillow AFTER everything else, then restart runtime.
+
+datasets>=2.19.0
+huggingface_hub>=0.23
+ultralytics>=8.0.0
+opencv-python-headless>=4.8.0
+numpy>=1.23
+matplotlib>=3.7
+pandas>=2.0
+tabulate>=0.9
+tqdm>=4.66
+fiftyone>=0.23
+pillow==11.2.1
+pyyaml>=6.0
+# torch/torchvision come preinstalled on Colab — do not pin torchvision here (PIL/_Ink conflicts)
