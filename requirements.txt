@@ -1,11 +1,12 @@
-# Pinned for a later Colab / local run. Do not train; YOLO must not auto-fetch weights.
-numpy==2.2.4
-opencv-python-headless==4.11.0.86
-Pillow==11.2.1
-PyYAML==6.0.2
-pydantic==2.11.4
-streamlit==1.45.1
-fastapi==0.115.12
-uvicorn==0.34.2
-ultralytics==8.3.107
-pytest==8.3.5
+# Core lab path (OpenCV head). Resolves on Colab; do not train.
+# ultralytics is optional — see requirements-yolo.txt (it caps numpy at 2.1.1
+# and pulls opencv-python, which conflicts with opencv-python-headless).
+numpy>=1.26.4,<2.2
+opencv-python-headless>=4.8.0,<4.12
+Pillow>=10.0.0,<12
+PyYAML>=6.0.2
+pydantic>=2.7,<3
+streamlit>=1.40,<1.46
+fastapi>=0.115,<0.116
+uvicorn>=0.34,<0.36
+pytest>=8.3,<9

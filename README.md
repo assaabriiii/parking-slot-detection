@@ -20,6 +20,7 @@ Do not train models in this phase.
 ```bash
 # from the repo root after upload / clone
 python -m pip install -r requirements.txt
+# YOLO optional later: pip install -r requirements-yolo.txt
 python scripts/make_sample_data.py
 PYTHONPATH=src python -m parking_mvp --config configs/default.yaml
 # inspect outputs/last_status.json

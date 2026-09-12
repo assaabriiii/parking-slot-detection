@@ -1,0 +1,5 @@
+# Optional. Only if you have a local occupancy .pt and occupancy_head: yolo.
+# Conflicts with numpy>=2.2 and with opencv-python-headless; install in a
+# separate attempt after the core requirements, or skip on Colab.
+ultralytics>=8.3.70,<8.4
+numpy>=1.23.0,<2.2
