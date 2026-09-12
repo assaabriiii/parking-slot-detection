@@ -1,0 +1,13 @@
+{
+  "camera_id": "sample_cam",
+  "image_width": 640,
+  "image_height": 360,
+  "notes": "Synthetic stub (5 spots). Occupied spots are dark rectangles; free spots are light gray.",
+  "spots": [
+    {"id": "spot_01", "polygon": [[20, 180], [140, 180], [140, 330], [20, 330]]},
+    {"id": "spot_02", "polygon": [[150, 180], [270, 180], [270, 330], [150, 330]]},
+    {"id": "spot_03", "polygon": [[280, 180], [400, 180], [400, 330], [280, 330]]},
+    {"id": "spot_04", "polygon": [[410, 180], [530, 180], [530, 330], [410, 330]]},
+    {"id": "spot_05", "polygon": [[540, 180], [620, 180], [620, 330], [540, 330]]}
+  ]
+}

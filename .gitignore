@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+venv/
+.env
+
+# Tests / tooling
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Runtime outputs (keep folder via .gitkeep)
+outputs/*
+!outputs/.gitkeep
+
+# Large public datasets (download later; never commit)
+data/cnrpark/
+data/pklot/
+data/metapklot/
+data/raw/
+*.tar
+*.tar.gz
+*.tar.xz
+*.zip
+
+# Model weights (never auto-download in this MVP)
+*.pt
+*.onnx
+*.engine
+weights/
+
+# Notebooks
+.ipynb_checkpoints/

@@ -1,0 +1,44 @@
+# Lab MVP: occupancy for a single fixed camera (10–30 spots).
+# Night performance is out of scope. Do not point this at a live street webcam
+# unless you later replace the source with public-dataset frames.
+
+camera_id: sample_cam
+
+# File, directory of images, or video path. Integer device indexes are not used
+# in the default lab path (avoids opening a webcam by accident).
+source: data/sample/frames
+
+roi_file: data/sample/spots.json
+
+# opencv (default heuristic) | yolo (requires a local .pt; never auto-downloads)
+occupancy_head: opencv
+
+yolo:
+  weights: weights/occupancy.pt
+  # If weights are missing, do not call Ultralytics (no Hub fetch). Fall back.
+  dry_run: true
+  fallback_to_baseline: true
+
+preprocess:
+  max_width: 1280
+  max_height: 720
+  blur_ksize: 3
+
+baseline:
+  # Occupied patches tend to have more texture (edges) than empty pavement.
+  laplacian_var_occupied_min: 80.0
+  # Very dark patches are treated as occupied (vehicle body); bright as free.
+  mean_occupied_max: 95.0
+
+temporal:
+  window: 5
+  # majority vote; ties keep the previous smoothed label
+  min_votes: 3
+
+# Intended update cadence when a human later runs video (not benchmarked here).
+tick_seconds: 3
+# Target end-to-end response on a lab machine: < 3 s per tick (documented only).
+target_latency_seconds: 3
+
+output:
+  last_status: outputs/last_status.json

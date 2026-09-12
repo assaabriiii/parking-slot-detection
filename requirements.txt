@@ -1,0 +1,11 @@
+# Pinned for a later Colab / local run. Do not train; YOLO must not auto-fetch weights.
+numpy==2.2.4
+opencv-python-headless==4.11.0.86
+Pillow==11.2.1
+PyYAML==6.0.2
+pydantic==2.11.4
+streamlit==1.45.1
+fastapi==0.115.12
+uvicorn==0.34.2
+ultralytics==8.3.107
+pytest==8.3.5

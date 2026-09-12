@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "parking-mvp"
+version = "0.1.0"
+description = "Lab MVP: fixed-camera parking-spot occupancy (free/occupied) from public datasets."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy==2.2.4",
+  "opencv-python-headless==4.11.0.86",
+  "Pillow==11.2.1",
+  "PyYAML==6.0.2",
+  "pydantic==2.11.4",
+]
+
+[project.optional-dependencies]
+app = [
+  "streamlit==1.45.1",
+  "fastapi==0.115.12",
+  "uvicorn==0.34.2",
+]
+yolo = [
+  "ultralytics==8.3.107",
+]
+dev = [
+  "pytest==8.3.5",
+]
+
+[project.scripts]
+parking-mvp = "parking_mvp.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "."]
+addopts = "-q"
