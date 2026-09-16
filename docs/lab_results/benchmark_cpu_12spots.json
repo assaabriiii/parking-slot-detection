@@ -1,0 +1,18 @@
+{
+  "device": "cpu",
+  "platform": "macOS-26.2-arm64-arm-64bit",
+  "processor": "arm",
+  "occupancy_head_requested": "opencv",
+  "head_used": "opencv",
+  "notes": null,
+  "n_spots": 12,
+  "n_frames_source": 3,
+  "repeats": 20,
+  "tick_seconds_config": 3.0,
+  "target_latency_seconds": 3,
+  "mean_s": 0.00048274779110215606,
+  "p95_s": 0.000717707967851311,
+  "max_s": 0.0007718329434283078,
+  "min_s": 0.0004094999749213457,
+  "under_3s": true
+}

@@ -30,3 +30,11 @@ def test_independent_spots():
     out = {s.spot_id: s.status for s in sm.update([_spot("a", "occupied"), _spot("b", "free")])}
     assert out["a"] == "free"
     assert out["b"] == "occupied"
+
+
+def test_one_tick_glitch_does_not_flip_occupied_label():
+    sm = TemporalSmoother(window=5, min_votes=3)
+    labels = ["occupied"] * 4 + ["free"] + ["occupied"] * 2
+    series = [sm.update([_spot("s1", x)])[0].status for x in labels]
+    assert series[-1] == "occupied"
+    assert "free" not in series

@@ -2,12 +2,18 @@
 
 Fixed-camera stall occupancy (**free** / **occupied**) from **public datasets** only. No self-captured street video. **Night scenes are out of scope.**
 
-This repo is the lab sample for the phase-1 feasibility brief (10–30 spots, one fixed camera, ≥90% in suitable daylight, update every 2–5 s, response &lt; 3 s). Code and evaluation protocols are in place; the numbers and demo still have to be **run and recorded** — see [How to cover the brief](#how-to-cover-the-brief).
+This repo is the lab sample for the phase-1 feasibility brief (10–30 spots, one fixed camera, ≥90% in suitable daylight, update every 2–5 s, response &lt; 3 s).
+
+**Done in-repo:** pipeline, Patch CNN head, leak-free Colab protocols, CPU latency, temporal flicker test, sequence demo, paper pack under `docs/`.
+
+**Colab P1 (2026-09-16):** Patch CNN **99.7%** on lot `pucpr`, unseen days, sunny, 24 spots. Weights: `weights/approach_a_patchcnn.pt` (gitignored). Default config uses `occupancy_head: patchcnn` and falls back to OpenCV if that file is missing.
+
+**Still open:** unseen-lot (P2) transfer; public oblique / curb-side number.
 
 ## What you get
 
-- OpenCV occupancy heuristic on ROI crops (default, no weights)
-- **Patch CNN** head (approach A) — loads a **local** `.pt` from the Colab notebook; never downloads
+- OpenCV occupancy heuristic on ROI crops (fallback if no `.pt`)
+- **Patch CNN** head (approach A) — default when `weights/approach_a_patchcnn.pt` is present
 - YOLO **stub** that never auto-downloads weights
 - Temporal majority vote
 - Streamlit lab UI + optional FastAPI `/status`
@@ -44,9 +50,29 @@ PYTHONPATH=src:tests:. pytest
 
 ## How to cover the brief
 
-Do these **in order**. The accuracy claim depends on the Colab run; everything after it is wasted if that split is still leaky or the `.pt` is missing.
+Status: **local lab pack executed** (latency, temporal, overlays, docs). **Accuracy ≥90% is not closed** until Colab P1 is re-run.
 
-### 1. Honest accuracy (≥90% target) — Colab
+### 0. Re-run the local pack
+
+```bash
+python -m pip install -r requirements.txt pytest
+PYTHONPATH=src:tests:. pytest
+PYTHONPATH=src python scripts/benchmark_tick.py
+PYTHONPATH=src python scripts/eval_temporal_flips.py
+PYTHONPATH=src python scripts/export_demo_overlays.py
+streamlit run app/streamlit_app.py   # Sequence mode; Play advances every tick_seconds
+```
+
+Paper pack (already written):
+
+- `docs/requirements.md`
+- `docs/camera_geometry.md`
+- `docs/feasibility_report.md`
+- `docs/test_report.md`
+- `docs/project2_plan.md`
+- `docs/lab_results/` — JSON + overlay PNGs from this machine
+
+### 1. Honest accuracy (≥90% target) — Colab (open)
 
 Upload `notebooks/parking_occupancy_mvp_colab.ipynb` **and** `requirements.txt`. Runtime → GPU (T4). Run all.
 
@@ -93,25 +119,25 @@ PYTHONPATH=src python -m parking_mvp --config configs/default.yaml
 
 If `outputs/last_status.json` has `notes` about falling back to OpenCV, the `.pt` did not load. Do **not** commit `*.pt` (gitignored). Keep a copy outside git or on a drive.
 
-### 3. Latency &lt; 3 s (CPU, not Colab GPU)
+### 3. Latency &lt; 3 s — **done on this lab CPU**
 
-Time **one full tick** on a laptop CPU with ~24 spots: read → preprocess → warp ROIs → batched Patch CNN → temporal vote. Colab T4 times do not satisfy the brief’s “lightweight hardware” line.
+JSON in `docs/lab_results/`. OpenCV ~0.5 ms (12 spots); Patch CNN architecture ~26 ms (12 spots, random weights). Re-run:
 
-Record mean and p95. Target: &lt; 3 s per tick. Config already uses `tick_seconds: 3`.
+```bash
+PYTHONPATH=src python scripts/benchmark_tick.py --roi-file configs/rois.example.json
+```
 
-### 4. Update cadence 2–5 s (demo)
+Colab T4 times still do not replace this.
 
-Streamlit today scores **one still**. To cover the demo requirement:
+### 4. Update cadence 2–5 s — **lab demo done**
 
-- Point `source` at a frame folder or video
-- Advance every `tick_seconds` (3)
-- Overlay ROIs green/red and show the status table + timestamp
+`streamlit run app/streamlit_app.py` → **Sequence (2–5 s tick)** → Play.
 
-Until that loop exists, a video run via `python -m parking_mvp --source path/to/clip.mp4` plus saved overlays in `outputs/` is the fallback evidence.
+Fallback: `PYTHONPATH=src python scripts/export_demo_overlays.py`
 
-Temporal vote (`temporal.window: 5`) should be measured as **false flip rate with vs without** smoothing (passing cars, shadows).
+Temporal flicker: `PYTHONPATH=src python scripts/eval_temporal_flips.py` (2 raw flips → 0 smoothed).
 
-### 5. Street / oblique gap (PKLot is a parking lot)
+### 5. Street / oblique gap — **procedure only**
 
 The brief is **curbside, oblique, 10–50 m**. PKLot is overhead lots. Cover the gap without recording streets:
 
@@ -122,18 +148,16 @@ The brief is **curbside, oblique, 10–50 m**. PKLot is overhead lots. Cover the
 
 Follow `scripts/label_guide.md`. Night / rain are out of scope; report them as limits.
 
-### 6. Paper pack the activity table asks for
+### 6. Paper pack — **written**
 
-| Brief deliverable | How to cover it |
+| Brief deliverable | File |
 | --- | --- |
-| Feasibility report | Colab `feasibility_report.md` after the protocol run → copy into `docs/` |
-| Requirements | Short checklist: 10–30 spots, 1080p, 2–5 s, ≥90% on P1, night out |
-| Camera geometry | One page: 10–50 m, oblique, roughly how many pixels a car is at 1080p |
+| Feasibility report | `docs/feasibility_report.md` |
+| Requirements | `docs/requirements.md` |
+| Camera geometry | `docs/camera_geometry.md` |
 | Labeling guide | `scripts/label_guide.md` |
-| Test report | P1/P2/P3 + CPU latency + weather stress + YOLO occupied-recall failure |
-| Project 2 plan | From P2 + oblique drop: per-camera calib, street data, night later |
-
-Do **not** claim night accuracy, city-wide deployment, or street accuracy without the oblique number.
+| Test report | `docs/test_report.md` |
+| Project 2 plan | `docs/project2_plan.md` |
 
 ## Config knobs
 

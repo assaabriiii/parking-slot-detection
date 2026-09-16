@@ -15,13 +15,14 @@ frame (file/video)
     → crop per spot
     → occupancy head
          ├─ OpenCV heuristic (default)
+         ├─ Patch CNN (local .pt, perspective warp)
          └─ YOLO stub (local .pt only; never auto-download)
     → temporal majority vote (few frames)
     → {spot_id, free|occupied, timestamp}
     → last_status.json / Streamlit
 ```
 
-Update cadence when a human later runs video: **2–5 s** (`tick_seconds: 3`). Intended response **< 3 s** per tick; this repo does not benchmark runtime.
+Update cadence when a human runs a sequence or video: **2–5 s** (`tick_seconds: 3`). CPU tick time on this lab machine is documented in `docs/lab_results/` (milliseconds, under the 3 s budget). Colab GPU times are not the hardware target.
 
 ## Modules (`src/parking_mvp`)
 
@@ -62,7 +63,8 @@ See `scripts/download_data.md`. Do not capture real streets.
 
 ## UI
 
-- `app/streamlit_app.py` — lab demo (preferred).
+- `app/streamlit_app.py` — still frame or **sequence** (advances every `tick_seconds`).
+- Overlay export without UI: `scripts/export_demo_overlays.py`.
 - `app/fastapi_app.py` — `GET /status` reads the JSON file.
 
 ## Non-goals (phase 1)

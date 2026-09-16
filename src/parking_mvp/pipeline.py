@@ -120,16 +120,42 @@ class OccupancyPipeline:
             raw = [self.head.predict(spot_id, crops[spot_id]) for spot_id in spot_ids]
         return self.smoother.update(raw)
 
-    def infer_image(self, image_path: str | Path, frame_index: int = 0) -> OccupancySnapshot:
-        image = self._preprocess(load_bgr(image_path))
+    def infer_bgr(
+        self,
+        image_bgr: np.ndarray,
+        *,
+        source: str = "",
+        frame_index: int = 0,
+        already_preprocessed: bool = False,
+    ) -> OccupancySnapshot:
+        image = image_bgr if already_preprocessed else self._preprocess(image_bgr)
         return OccupancySnapshot.now(
             camera_id=self.camera_id,
-            source=str(image_path),
+            source=source,
             spots=self.predict_frame(image),
             frame_index=frame_index,
             tick_seconds=self.tick_seconds,
             notes=self.fallback_note,
         )
+
+    def infer_image(self, image_path: str | Path, frame_index: int = 0) -> OccupancySnapshot:
+        return self.infer_bgr(load_bgr(image_path), source=str(image_path), frame_index=frame_index)
+
+    def iter_source(self, source: str | Path | None = None):
+        """Yield one snapshot per tick (every image, or every video stride)."""
+        src = source or self.cfg["source"]
+        if is_video(src):
+            yield from self._iter_video(Path(src))
+            return
+        for i, frame in enumerate(list_frames(src)):
+            yield self.infer_image(frame, frame_index=i)
+
+    def overlay_snapshot(self, image_bgr: np.ndarray, snapshot: OccupancySnapshot) -> np.ndarray:
+        from parking_mvp.roi import overlay_rois
+
+        image = self._preprocess(image_bgr)
+        statuses = {s.spot_id: s.status for s in snapshot.spots}
+        return overlay_rois(image, self.rois_for(image), statuses)
 
     def write_status(self, snapshot: OccupancySnapshot, out_path: str | Path | None = None) -> Path:
         dest = Path(out_path or (self.cfg.get("output") or {}).get("last_status", "outputs/last_status.json"))
@@ -155,6 +181,19 @@ class OccupancyPipeline:
         return snapshot
 
     def _run_video(self, path: Path, write: bool = True) -> OccupancySnapshot:
+        snapshot = OccupancySnapshot.now(
+            camera_id=self.camera_id,
+            source=str(path),
+            spots=[],
+            tick_seconds=self.tick_seconds,
+        )
+        for snapshot in self._iter_video(path):
+            pass
+        if write:
+            self.write_status(snapshot)
+        return snapshot
+
+    def _iter_video(self, path: Path):
         import cv2
 
         cap = cv2.VideoCapture(str(path))
@@ -162,12 +201,6 @@ class OccupancyPipeline:
             raise FileNotFoundError(f"could not open video: {path}")
         fps = cap.get(cv2.CAP_PROP_FPS) or 25.0
         stride = max(1, int(round(fps * self.tick_seconds)))
-        snapshot = OccupancySnapshot.now(
-            camera_id=self.camera_id,
-            source=str(path),
-            spots=[],
-            tick_seconds=self.tick_seconds,
-        )
         idx = 0
         kept = 0
         try:
@@ -178,19 +211,8 @@ class OccupancyPipeline:
                 if idx % stride != 0:
                     idx += 1
                     continue
-                image = self._preprocess(frame)
-                snapshot = OccupancySnapshot.now(
-                    camera_id=self.camera_id,
-                    source=str(path),
-                    spots=self.predict_frame(image),
-                    frame_index=kept,
-                    tick_seconds=self.tick_seconds,
-                    notes=self.fallback_note,
-                )
+                yield self.infer_bgr(frame, source=str(path), frame_index=kept)
                 kept += 1
                 idx += 1
         finally:
             cap.release()
-        if write:
-            self.write_status(snapshot)
-        return snapshot

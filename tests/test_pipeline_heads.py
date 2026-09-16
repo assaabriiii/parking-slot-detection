@@ -60,3 +60,11 @@ def test_roi_rescaling_is_cached_per_frame_size():
     pipe = OccupancyPipeline(base_cfg())
     small = np.zeros((180, 320, 3), dtype=np.uint8)
     assert pipe.rois_for(small) is pipe.rois_for(small)
+
+
+def test_iter_source_scores_every_sample_frame():
+    pipe = OccupancyPipeline(base_cfg(source="data/sample/frames"))
+    snaps = list(pipe.iter_source("data/sample/frames"))
+    assert len(snaps) == 3
+    assert [s.frame_index for s in snaps] == [0, 1, 2]
+    assert all(len(s.spots) == 5 for s in snaps)

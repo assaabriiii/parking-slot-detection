@@ -1,0 +1,8 @@
+{
+  "scenario": "single-tick flicker on an occupied stall (passing car / shadow)",
+  "n_ticks": 17,
+  "raw_flips_window1": 2,
+  "smoothed_flips_window5_minvotes3": 0,
+  "flip_reduction": 2,
+  "brief_note": "Phase 1 uses majority vote over a few frames to suppress momentary errors."
+}

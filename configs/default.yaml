@@ -10,16 +10,16 @@ source: data/sample/frames
 
 roi_file: data/sample/spots.json
 
-# opencv (default heuristic) | patchcnn (approach A) | yolo
-# The learned heads require a local .pt and never auto-download.
-occupancy_head: opencv
+# opencv | patchcnn (approach A) | yolo
+# Learned heads need a local .pt and never auto-download. If the file is
+# missing, the pipeline falls back to OpenCV (CI / fresh clone).
+occupancy_head: patchcnn
 
 patchcnn:
-  # Approach A weights exported by notebooks/parking_occupancy_mvp_colab.ipynb
-  # (saved there as outputs/approach_a_patchcnn.pt). Needs requirements-patchcnn.txt.
+  # Colab export: notebooks/parking_occupancy_mvp_colab.ipynb → approach_a_patchcnn.pt
+  # gitignored. pip install -r requirements-patchcnn.txt
   weights: weights/approach_a_patchcnn.pt
-  # If the file is missing, do not import torch. Fall back to the baseline.
-  dry_run: true
+  dry_run: false
   fallback_to_baseline: true
   # Must match the training crop size, or the loaded weights see the wrong scale.
   input_size: 128

@@ -1,0 +1,14 @@
+{
+  "device": "cpu",
+  "platform": "macOS-26.2-arm64-arm-64bit",
+  "occupancy_head_requested": "patchcnn",
+  "head_used": "patchcnn",
+  "weights": "weights/approach_a_untrained.pt (random init \u2014 latency only, not accuracy)",
+  "n_spots": 5,
+  "repeats": 20,
+  "mean_s": 0.012095572997350246,
+  "p95_s": 0.01380533300107345,
+  "max_s": 0.015112207969650626,
+  "under_3s": true,
+  "notes": null
+}
