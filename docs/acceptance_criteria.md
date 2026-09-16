@@ -8,8 +8,14 @@ Use this list when a human runs the repo (e.g. Google Colab). The scaffold itsel
 - [ ] `configs/rois.example.json` defines **12** spots.
 - [ ] `python -m parking_mvp --config configs/default.yaml` on the stub writes `outputs/last_status.json` with `spot_id`, `status` (`free` \| `occupied`), `confidence`, UTC `timestamp`.
 - [ ] Default source is a **folder of images**, not a webcam index.
-- [ ] OpenCV head runs with **no** `.pt` file.
+- [ ] OpenCV head runs with **no** `.pt` file and reproduces the README pattern
+      (`spot_02` / `spot_04` free, the rest occupied).
 - [ ] YOLO path with missing weights does **not** download `yolov8n*.pt` (dry-run / fallback).
+- [ ] `occupancy_head: patchcnn` with missing weights imports **no** torch, falls back
+      to OpenCV, and records the fallback in the snapshot `notes`.
+- [ ] `model_patchcnn` layer names match the notebook, so the exported
+      `approach_a_patchcnn.pt` loads without edits.
+- [ ] ROI polygons are rescaled when preprocess resizes the frame (1080p source).
 - [ ] Temporal window is configurable (default 5 frames).
 - [ ] `pytest` (offline) covers ROI load/crop, temporal vote, schema, YOLO dry-run, dataset parsers on tiny temp files.
 - [ ] Streamlit file exists; starting it is optional and **not** required for this checklist in CI.

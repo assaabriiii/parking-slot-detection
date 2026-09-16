@@ -1,0 +1,5 @@
+# Optional. Only needed for occupancy_head: patchcnn together with a local .pt
+# trained by notebooks/parking_occupancy_mvp_colab.ipynb (approach A).
+# CPU wheels are enough for a 10-30 spot camera; install after the core
+# requirements so the pinned numpy is not disturbed.
+torch>=2.2,<3

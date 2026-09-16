@@ -11,7 +11,9 @@ from parking_mvp.io_schema import OccupancyLabel, SpotStatus
 
 @dataclass(frozen=True)
 class BaselineConfig:
-    laplacian_var_occupied_min: float = 80.0
+    # Painted stall markings inside the ROI put an empty stall near 100, so a
+    # lower floor labels every stall occupied. See configs/default.yaml.
+    laplacian_var_occupied_min: float = 300.0
     mean_occupied_max: float = 95.0
 
 

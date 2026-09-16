@@ -10,8 +10,20 @@ source: data/sample/frames
 
 roi_file: data/sample/spots.json
 
-# opencv (default heuristic) | yolo (requires a local .pt; never auto-downloads)
+# opencv (default heuristic) | patchcnn (approach A) | yolo
+# The learned heads require a local .pt and never auto-download.
 occupancy_head: opencv
+
+patchcnn:
+  # Approach A weights exported by notebooks/parking_occupancy_mvp_colab.ipynb
+  # (saved there as outputs/approach_a_patchcnn.pt). Needs requirements-patchcnn.txt.
+  weights: weights/approach_a_patchcnn.pt
+  # If the file is missing, do not import torch. Fall back to the baseline.
+  dry_run: true
+  fallback_to_baseline: true
+  # Must match the training crop size, or the loaded weights see the wrong scale.
+  input_size: 128
+  device: cpu
 
 yolo:
   weights: weights/occupancy.pt
@@ -26,7 +38,11 @@ preprocess:
 
 baseline:
   # Occupied patches tend to have more texture (edges) than empty pavement.
-  laplacian_var_occupied_min: 80.0
+  # Tuned on data/sample: an empty stall still scores ~100 because the painted
+  # stall marking sits inside the ROI, while a vehicle scores ~1570. At 80 every
+  # empty stall read as occupied. Re-tune per camera; painted lines, kerbs and
+  # pavement texture all raise the floor.
+  laplacian_var_occupied_min: 300.0
   # Very dark patches are treated as occupied (vehicle body); bright as free.
   mean_occupied_max: 95.0
 

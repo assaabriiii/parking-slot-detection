@@ -28,20 +28,29 @@ Update cadence when a human later runs video: **2–5 s** (`tick_seconds: 3`). I
 | Module | Role |
 | --- | --- |
 | `preprocess` | Load BGR, cap resolution |
-| `roi` | JSON polygons, bbox crop, overlay |
+| `roi` | JSON polygons, bbox crop, perspective warp, rescale, overlay |
 | `baseline` | Laplacian variance + mean intensity |
+| `model_patchcnn` | Approach-A patch classifier; imports torch only if a **local** `.pt` exists |
 | `model_yolo` | Load Ultralytics only if a **local** weight file exists |
 | `temporal` | Per-spot deque, majority, tie → previous label |
 | `pipeline` | Glue; writes JSON; no webcam index in default config |
 | `io_schema` | Pydantic snapshot |
 
+ROI polygons are pixel coordinates on the frame they were drawn on. `preprocess`
+caps resolution, so `ROISet.scaled_to` rescales them to whatever frame is actually
+scored — without it a 1080p source silently shifts every ROI.
+
 ## Occupancy heads
 
 **OpenCV (default).** Empty pavement is brighter and lower-texture than a vehicle. Thresholds live in `configs/default.yaml`. This is a lab baseline, not a production classifier.
 
-**YOLO (optional).** Classification or detection on the crop. Instantiating `YOLO("yolov8n.pt")` would fetch weights; the stub **refuses** that. If `occupancy_head: yolo` and weights are missing, the pipeline **falls back** to OpenCV (`yolo.fallback_to_baseline`).
+**Patch CNN (approach A).** The classifier trained in `notebooks/parking_occupancy_mvp_colab.ipynb`. Each stall polygon is perspective-warped to a 128×128 square and classified free/occupied, with class 0 = free. One batched forward pass covers the whole frame, which is what keeps a 10–30 spot camera inside the 3 s tick budget. Torch is imported only when a local `.pt` is present, so the default install stays numpy + OpenCV.
 
-Training is a non-goal. If you later fine-tune `yolov8n-cls` on CNRPark patches, put the `.pt` under `weights/` and set `dry_run: false`.
+Export `approach_a_patchcnn.pt` from the notebook, place it at `patchcnn.weights`, `pip install -r requirements-patchcnn.txt`, and set `patchcnn.dry_run: false`. `input_size` must match the training crop size or the weights see the wrong scale.
+
+**YOLO (optional).** Classification or detection on the crop. Instantiating `YOLO("yolov8n.pt")` would fetch weights; the stub **refuses** that.
+
+Any learned head that has no local weights **falls back** to OpenCV (`fallback_to_baseline`) and the fallback is recorded in the snapshot `notes`, so a run can never silently look like it used a model it did not load.
 
 ## Datasets (public only)
 
