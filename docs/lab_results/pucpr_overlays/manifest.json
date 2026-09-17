@@ -1,0 +1,50 @@
+[
+  {
+    "index": 1,
+    "file": "data/data_0/2012-09-21_14_45_32.jpg",
+    "date": "2012-09-21",
+    "timestamp": "2012-09-21T14:45:32Z",
+    "n_spots": 24,
+    "gt_occupied": 17,
+    "pred_occupied": 13,
+    "correct": 20,
+    "pred_png": "pucpr_01_pred_2012-09-21_14_45_32.png",
+    "gt_png": "pucpr_01_gt_2012-09-21_14_45_32.png"
+  },
+  {
+    "index": 2,
+    "file": "data/data_0/2012-09-19_16_53_44.jpg",
+    "date": "2012-09-19",
+    "timestamp": "2012-09-19T16:53:44Z",
+    "n_spots": 24,
+    "gt_occupied": 20,
+    "pred_occupied": 20,
+    "correct": 24,
+    "pred_png": "pucpr_02_pred_2012-09-19_16_53_44.png",
+    "gt_png": "pucpr_02_gt_2012-09-19_16_53_44.png"
+  },
+  {
+    "index": 3,
+    "file": "data/data_0/2012-09-17_12_19_06.jpg",
+    "date": "2012-09-17",
+    "timestamp": "2012-09-17T12:19:06Z",
+    "n_spots": 24,
+    "gt_occupied": 11,
+    "pred_occupied": 9,
+    "correct": 22,
+    "pred_png": "pucpr_03_pred_2012-09-17_12_19_06.png",
+    "gt_png": "pucpr_03_gt_2012-09-17_12_19_06.png"
+  },
+  {
+    "index": 4,
+    "file": "data/data_0/2012-09-11_15_43_35.jpg",
+    "date": "2012-09-11",
+    "timestamp": "2012-09-11T15:43:35Z",
+    "n_spots": 24,
+    "gt_occupied": 16,
+    "pred_occupied": 16,
+    "correct": 24,
+    "pred_png": "pucpr_04_pred_2012-09-11_15_43_35.png",
+    "gt_png": "pucpr_04_gt_2012-09-11_15_43_35.png"
+  }
+]
